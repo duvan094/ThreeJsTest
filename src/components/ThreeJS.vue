@@ -12,11 +12,7 @@ onMounted(() => {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  console.log('renderer', renderer )
-
   renderer.setSize(window.innerWidth, window.innerHeight)
-/*   renderer.shadowMapEnabled = true
-  renderer.shadowMapType = THREE.PCFSoftShadowMap */
   container.value.appendChild(renderer.domElement)
 
   window.addEventListener('resize', () => {
