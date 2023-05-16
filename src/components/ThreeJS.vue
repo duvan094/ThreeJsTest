@@ -2,75 +2,11 @@
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import {addMouseHandler, setModel} from '../utils/rotateModel'
 
 const container = ref(null)
 
 let scene, model, camera, renderer
-
-var mouseDown = false,
-    mouseX = 0,
-    mouseY = 0;
-
-function onMouseMove(event) {
-    if (!mouseDown) {
-        return;
-    }
-
-    event.preventDefault();
-
-    const clientX = event?.touches && event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
-    const clientY = event?.touches && event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
-
-    var deltaX = clientX - mouseX;
-    var deltaY = clientY - mouseY;
-    mouseX = clientX;
-    mouseY = clientY;
-    rotateScene(deltaX, deltaY);
-}
-
-function onMouseDown(event) {
-  event.preventDefault();
-
-  const clientX = event?.touches && event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
-  const clientY = event?.touches && event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
-
-  mouseDown = true;
-  mouseX = clientX;
-  mouseY = clientY;
-}
-
-function onMouseUp(event) {
-    event.preventDefault();
-    mouseDown = false;
-}
-
-function addMouseHandler(canvas) {
-    canvas.addEventListener('mousemove', function (e) {
-        onMouseMove(e);
-    }, false);
-    canvas.addEventListener('mousedown', function (e) {
-        onMouseDown(e);
-    }, false);
-    canvas.addEventListener('mouseup', function (e) {
-        onMouseUp(e);
-    }, false);
-
-    canvas.addEventListener('touchmove', function (e) {
-        onMouseMove(e);
-    }, false);
-    canvas.addEventListener('touchstart', function (e) {
-        onMouseDown(e);
-    }, false);
-    canvas.addEventListener('touchend', function (e) {
-        onMouseUp(e);
-    }, false);
-
-}
-
-function rotateScene(deltaX, deltaY) {
-    model.rotation.y += deltaX / 100;
-    model.rotation.x += deltaY / 100;
-}
 
 function initateRenderer() {
   scene = new THREE.Scene()
@@ -83,7 +19,7 @@ function initateRenderer() {
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.value.appendChild(renderer.domElement)
 
-  addMouseHandler(renderer.domElement)
+  addMouseHandler(renderer.domElement, model)
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -117,7 +53,7 @@ async function loadModel() {
     loader.load( 'shrek.glb', function ( gltf ) {
       model = gltf.scene
       scene.add( model );
-      
+      setModel(model)
       return resolve()
 
     }, undefined, function ( error ) {
@@ -126,7 +62,6 @@ async function loadModel() {
   })
   
 }
-
 
 function animate() {
   requestAnimationFrame(function () {
