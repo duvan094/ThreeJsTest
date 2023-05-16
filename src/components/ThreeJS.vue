@@ -1,3 +1,7 @@
+<template>
+  <div class="container" ref="container"></div>
+</template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
@@ -85,10 +89,6 @@ onMounted(async () => {
 })
 
 </script>
-
-<template>
-    <div class="container" ref="container"></div>
-</template>
 
 <style scoped>
 
