@@ -4,17 +4,69 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 const container = ref(null)
+let model
+
+var mouseDown = false,
+    mouseX = 0,
+    mouseY = 0;
+
+function onMouseMove(event) {
+    if (!mouseDown) {
+        return;
+    }
+
+    event.preventDefault();
+
+    var deltaX = event.clientX - mouseX;
+    var deltaY = event.clientY - mouseY;
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+    rotateScene(deltaX, deltaY);
+}
+
+function onMouseDown(event) {
+  event.preventDefault();
+    mouseDown = true;
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+}
+
+function onMouseUp(event) {
+    event.preventDefault();
+    mouseDown = false;
+}
+
+function addMouseHandler(canvas) {
+    canvas.addEventListener('mousemove', function (e) {
+        onMouseMove(e);
+    }, false);
+    canvas.addEventListener('mousedown', function (e) {
+        onMouseDown(e);
+    }, false);
+    canvas.addEventListener('mouseup', function (e) {
+        onMouseUp(e);
+    }, false);
+}
+
+function rotateScene(deltaX, deltaY) {
+    model.rotation.y += deltaX / 100;
+    model.rotation.x += deltaY / 100;
+}
+
 
 onMounted(async () => {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x262626)
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
   const renderer = new THREE.WebGLRenderer()
+
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.value.appendChild(renderer.domElement)
+
+  addMouseHandler(renderer.domElement)
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -37,9 +89,6 @@ onMounted(async () => {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshStandardMaterial({ color: 0xf2f2f2 })
   material.roughness = 0.4
-  // const cube = new THREE.Mesh(geometry, material)
-  
-  let model
 
   const loader = new GLTFLoader();
 
