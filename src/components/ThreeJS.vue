@@ -54,7 +54,7 @@ async function loadModel() {
   const loader = new GLTFLoader();
 
   await new Promise((resolve, reject) => { 
-    loader.load( 'shrek.glb', function ( gltf ) {
+    loader.load( 'shrek-sfw.glb', function ( gltf ) {
       model = gltf.scene
       scene.add( model );
       setModel(model)
