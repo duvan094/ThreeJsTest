@@ -14,7 +14,7 @@ let scene, model, camera, renderer
 
 function initateRenderer() {
   scene = new THREE.Scene()
-  scene.background = new THREE.Color(0x262626)
+  scene.background = new THREE.Color(0x1b1e2f)
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
   renderer = new THREE.WebGLRenderer()
   renderer.setPixelRatio(window.devicePixelRatio)
