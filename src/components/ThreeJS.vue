@@ -6,11 +6,12 @@
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {addMouseHandler, setModel} from '../utils/rotateModel'
 
 const container = ref(null)
 
-let scene, model, camera, renderer
+let scene, model, camera, renderer, controls
 
 function initateRenderer() {
   scene = new THREE.Scene()
@@ -23,7 +24,7 @@ function initateRenderer() {
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.value.appendChild(renderer.domElement)
 
-  addMouseHandler(renderer.domElement, model)
+  // addMouseHandler(renderer.domElement, model)
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -32,9 +33,13 @@ function initateRenderer() {
     renderer.setSize(window.innerWidth, window.innerHeight)
   })
 
-  camera.position.z = 20
-  camera.position.y = -7
+
+/*   document.addEventListener( 'mousewheel', (event) => {
+    camera.position.z +=event.deltaY/100;
+  }); */
+
 }
+
 
 function addLights() {
   const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
@@ -64,6 +69,8 @@ async function loadModel() {
       return
     });
   })
+
+  model.position.y = 7
   
 }
 
@@ -72,9 +79,11 @@ function animate() {
     animate()
   })
   
+  controls.update();
+
   if(model) {
     // model.rotation.x += 0.01
-    model.rotation.y += 0.01 
+    model.rotation.y += 0.005 
   }
 
   renderer.render(scene, camera)
@@ -84,6 +93,12 @@ onMounted(async () => {
   initateRenderer()
   addLights()
   await loadModel()
+
+  controls = new OrbitControls( camera, renderer.domElement );
+  camera.position.z = 20
+  camera.position.x = 10
+  camera.position.y = 10
+  controls.update();
 
   animate()
 })
