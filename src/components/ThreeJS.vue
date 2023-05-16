@@ -17,8 +17,8 @@ function onMouseMove(event) {
 
     event.preventDefault();
 
-    const clientX = event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
-    const clientY = event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
+    const clientX = event?.touches && event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
+    const clientY = event?.touches && event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
 
     var deltaX = clientX - mouseX;
     var deltaY = clientY - mouseY;
@@ -30,8 +30,8 @@ function onMouseMove(event) {
 function onMouseDown(event) {
   event.preventDefault();
 
-  const clientX = event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
-  const clientY = event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
+  const clientX = event?.touches && event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
+  const clientY = event?.touches && event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
 
   mouseDown = true;
   mouseX = clientX;
