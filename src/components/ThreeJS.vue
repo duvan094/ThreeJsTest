@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 const container = ref(null)
 
-onMounted(() => {
+onMounted(async () => {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x262626)
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -36,36 +37,43 @@ onMounted(() => {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshStandardMaterial({ color: 0xf2f2f2 })
   material.roughness = 0.4
-  const cube = new THREE.Mesh(geometry, material)
+  // const cube = new THREE.Mesh(geometry, material)
   
-  directionalLight.castShadow = true
-  directionalLight.castShadow = true
-  directionalLight.shadow.camera.near = 10
-  directionalLight.shadow.camera.far = 100
-  directionalLight.shadow.camera.left = -50
-  directionalLight.shadow.camera.right = 50
-  directionalLight.shadow.camera.top = 50
-  directionalLight.shadow.camera.bottom = -50
+  let model
 
-  cube.castShadow = true
-  cube.recieveShadow = true
+  const loader = new GLTFLoader();
+
+  await new Promise((resolve, reject) => { 
+    loader.load( 'shrek.glb', function ( gltf ) {
+      model = gltf.scene
+      scene.add( model );
+      
+      return resolve()
+
+    }, undefined, function ( error ) {
+      return
+    });
+  })
 
   scene.add( directionalLight )
 
-  scene.add(cube)
+  // scene.add(cube)
 
-  camera.position.z = 5
-
-  animate(renderer, scene, camera, cube)
+  camera.position.z = 20
+  camera.position.y = -7
+  animate(renderer, scene, camera, model)
 })
 
-function animate(renderer, scene, camera, cube) {
+function animate(renderer, scene, camera, model) {
   requestAnimationFrame(function () {
-    animate(renderer, scene, camera, cube)
+    animate(renderer, scene, camera, model)
   })
+  
+  if(model) {
+    // model.rotation.x += 0.01
+    model.rotation.y += 0.01 
+  }
 
-  cube.rotation.x += 0.01
-  cube.rotation.y += 0.01 
   renderer.render(scene, camera)
 }
 </script>
