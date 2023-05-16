@@ -17,18 +17,25 @@ function onMouseMove(event) {
 
     event.preventDefault();
 
-    var deltaX = event.clientX - mouseX;
-    var deltaY = event.clientY - mouseY;
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+    const clientX = event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
+    const clientY = event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
+
+    var deltaX = clientX - mouseX;
+    var deltaY = clientY - mouseY;
+    mouseX = clientX;
+    mouseY = clientY;
     rotateScene(deltaX, deltaY);
 }
 
 function onMouseDown(event) {
   event.preventDefault();
-    mouseDown = true;
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+
+  const clientX = event?.touches[0]?.clientX ? event.touches[0].clientX : event.clientX
+  const clientY = event?.touches[0]?.clientY ? event.touches[0].clientY : event.clientY
+
+  mouseDown = true;
+  mouseX = clientX;
+  mouseY = clientY;
 }
 
 function onMouseUp(event) {
@@ -46,6 +53,17 @@ function addMouseHandler(canvas) {
     canvas.addEventListener('mouseup', function (e) {
         onMouseUp(e);
     }, false);
+
+    canvas.addEventListener('touchmove', function (e) {
+        onMouseMove(e);
+    }, false);
+    canvas.addEventListener('touchstart', function (e) {
+        onMouseDown(e);
+    }, false);
+    canvas.addEventListener('touchend', function (e) {
+        onMouseUp(e);
+    }, false);
+
 }
 
 function rotateScene(deltaX, deltaY) {
@@ -86,7 +104,6 @@ onMounted(async () => {
   pointLight.position.z = 4
   scene.add(pointLight)
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshStandardMaterial({ color: 0xf2f2f2 })
   material.roughness = 0.4
 
