@@ -4,7 +4,8 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 const container = ref(null)
-let model
+
+let scene, model, camera, renderer
 
 var mouseDown = false,
     mouseX = 0,
@@ -71,12 +72,11 @@ function rotateScene(deltaX, deltaY) {
     model.rotation.x += deltaY / 100;
 }
 
-
-onMounted(async () => {
-  const scene = new THREE.Scene()
+function initateRenderer() {
+  scene = new THREE.Scene()
   scene.background = new THREE.Color(0x262626)
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-  const renderer = new THREE.WebGLRenderer()
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+  renderer = new THREE.WebGLRenderer()
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -92,20 +92,25 @@ onMounted(async () => {
     renderer.setSize(window.innerWidth, window.innerHeight)
   })
 
+  camera.position.z = 20
+  camera.position.y = -7
+}
+
+function addLights() {
   const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-  
   scene.add(ambientLight)
+
+  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+  scene.add( directionalLight )
 
   const pointLight = new THREE.PointLight(0xffffff, 0.5)
   pointLight.position.x = 2
   pointLight.position.y = 3
   pointLight.position.z = 4
   scene.add(pointLight)
+}
 
-  const material = new THREE.MeshStandardMaterial({ color: 0xf2f2f2 })
-  material.roughness = 0.4
-
+async function loadModel() {
   const loader = new GLTFLoader();
 
   await new Promise((resolve, reject) => { 
@@ -119,19 +124,13 @@ onMounted(async () => {
       return
     });
   })
+  
+}
 
-  scene.add( directionalLight )
 
-  // scene.add(cube)
-
-  camera.position.z = 20
-  camera.position.y = -7
-  animate(renderer, scene, camera, model)
-})
-
-function animate(renderer, scene, camera, model) {
+function animate() {
   requestAnimationFrame(function () {
-    animate(renderer, scene, camera, model)
+    animate()
   })
   
   if(model) {
@@ -141,12 +140,29 @@ function animate(renderer, scene, camera, model) {
 
   renderer.render(scene, camera)
 }
+
+onMounted(async () => {
+  initateRenderer()
+  addLights()
+  await loadModel()
+
+  animate()
+})
+
 </script>
 
 <template>
-  <div>
-    <div class="3d-container" ref="container"></div>
-  </div>
+    <div class="container" ref="container"></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+  .container {
+    cursor: grab;
+  }
+
+  .container:active {
+    cursor: grabbing;
+  }
+
+</style>
