@@ -1,5 +1,5 @@
 <template>
-  <div class="container" ref="container"></div>
+  <div class="container" ref="container" :class="[{'loaded': loaded}]"></div>
 </template>
 
 <script setup>
@@ -9,6 +9,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const container = ref(null)
+const loaded = ref(false)
 
 let scene, model, camera, renderer, controls
 
@@ -71,12 +72,14 @@ async function toggleNsfwModel() {
 }
 
 async function loadModel() {
+  loaded.value = false
   const loader = new GLTFLoader();
 
   await new Promise((resolve, reject) => { 
     loader.load( filePathToModel.value, function ( gltf ) {
       model = gltf.scene
-      scene.add( model );
+      scene.add( model )
+      loaded.value = true
       return resolve()
 
     }, undefined, function ( error ) {
@@ -138,10 +141,16 @@ function keyStroke(event) {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
   .container {
     cursor: grab;
+    opacity: 0;
+    transition: 1s ease-out opacity;
+
+    &.loaded {
+      opacity: 1;
+    }
   }
 
   .container:active {
