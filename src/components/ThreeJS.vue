@@ -42,17 +42,20 @@ function initateRenderer() {
 
 
 function addLights() {
-  const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+  const ambientLight = new THREE.AmbientLight( 0xffffff, .3 );
   scene.add(ambientLight)
 
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+  const directionalLight = new THREE.DirectionalLight( 0xffffff, .5 );
   scene.add( directionalLight )
 
-  const pointLight = new THREE.PointLight(0xffffff, 0.5)
-  pointLight.position.x = 2
-  pointLight.position.y = 3
-  pointLight.position.z = 4
+  const pointLight = new THREE.PointLight(0xffffff, 1)
+  pointLight.position.x = 20
+  pointLight.position.y = 50
+  pointLight.position.z = 20
   scene.add(pointLight)
+
+  const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, .5 );
+  scene.add( light );
 }
 
 async function loadModel() {
@@ -78,8 +81,6 @@ function animate() {
   requestAnimationFrame(function () {
     animate()
   })
-  
-  controls.update();
 
   if(model) {
     // model.rotation.x += 0.01
@@ -95,6 +96,8 @@ onMounted(async () => {
   await loadModel()
 
   controls = new OrbitControls( camera, renderer.domElement );
+  controls.minDistance  = 4
+  controls.maxDistance = 50;
   camera.position.z = 20
   camera.position.x = 10
   camera.position.y = 10
