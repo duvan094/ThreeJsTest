@@ -7,17 +7,18 @@ import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import {addMouseHandler, setModel} from '../utils/rotateModel'
 
 const container = ref(null)
 
 let scene, model, camera, renderer, controls
 
+const filePathToModel = ref('shrek-sfw.glb')
+const toggleNsfw = ref(false)
+
 function initateRenderer() {
   scene = new THREE.Scene()
-  scene.background = new THREE.Color(0x1b1e2f)
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-  renderer = new THREE.WebGLRenderer()
+  renderer = new THREE.WebGLRenderer( { alpha: true } )
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -56,16 +57,26 @@ function addLights() {
 
   const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, .5 );
   scene.add( light );
+
+  scene.fog = new THREE.FogExp2( 0x1b1e2f, .01 )
+}
+
+async function toggleNsfwModel() {
+  toggleNsfw.value = !toggleNsfw.value
+  filePathToModel.value = toggleNsfw.value ? 'shrek-nsfw.glb' : 'shrek-sfw.glb'
+
+  const selectedObject = scene.getObjectByName(model.name);
+  scene.remove( selectedObject );
+  await loadModel()
 }
 
 async function loadModel() {
   const loader = new GLTFLoader();
 
   await new Promise((resolve, reject) => { 
-    loader.load( 'shrek-sfw.glb', function ( gltf ) {
+    loader.load( filePathToModel.value, function ( gltf ) {
       model = gltf.scene
       scene.add( model );
-      setModel(model)
       return resolve()
 
     }, undefined, function ( error ) {
@@ -74,7 +85,6 @@ async function loadModel() {
   })
 
   model.position.y = 7
-  
 }
 
 function animate() {
@@ -95,16 +105,36 @@ onMounted(async () => {
   addLights()
   await loadModel()
 
+  window.addEventListener("keydown", keyStroke);
+
   controls = new OrbitControls( camera, renderer.domElement );
   controls.minDistance  = 4
   controls.maxDistance = 50;
   camera.position.z = 20
   camera.position.x = 10
   camera.position.y = 10
+
   controls.update();
 
   animate()
 })
+
+const keyStrokes = ref("")
+
+function keyStroke(event) {
+  keyStrokes.value += event.key
+
+  if(keyStrokes.value.length < 4) {
+    return 
+  }
+
+  const lastFourKeys = keyStrokes.value.substr(keyStrokes.value.length - 4)
+
+  if(lastFourKeys.toLowerCase() === "nsfw") {
+    toggleNsfwModel()
+    keyStrokes.value = ""
+  }
+}
 
 </script>
 
