@@ -66,6 +66,8 @@ function addLights() {
 
   const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, .5 );
   scene.add( light );
+
+  scene.fog = new THREE.FogExp2( 0x262B44, 0.02 );
 }
 
 async function loadModel() {
