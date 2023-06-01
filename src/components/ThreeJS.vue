@@ -19,6 +19,16 @@ watch(props, async (newProps, oldProps) => {
   const selectedObject = scene.getObjectByName(model.name);
   scene.remove( selectedObject );
   await loadModel()
+
+  if(newProps.filePathToModel === 'camera.glb') {
+    camera.position.z = 4
+    camera.position.x = 3
+    camera.position.y = 2
+  } else {
+    camera.position.z = 20
+    camera.position.x = 10
+    camera.position.y = 10
+  }
 })
 
 let scene, model, camera, renderer, controls
@@ -76,7 +86,9 @@ async function loadModel() {
     });
   })
 
-  model.position.y = 7
+  if(props.filePathToModel !== 'camera.glb') {
+    model.position.y = 7
+  }
 }
 
 function animate() {
@@ -100,9 +112,15 @@ onMounted(async () => {
   controls.maxDistance = 50
   controls.autoRotate = true
 
-  camera.position.z = 20
-  camera.position.x = 10
-  camera.position.y = 10
+  if(props.filePathToModel === 'camera.glb') {
+    camera.position.z = 4
+    camera.position.x = 3
+    camera.position.y = 2
+  } else {
+    camera.position.z = 20
+    camera.position.x = 10
+    camera.position.y = 10
+  }
 
   controls.update();
 
