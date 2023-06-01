@@ -61,13 +61,11 @@ function addLights() {
   const pointLight = new THREE.PointLight(0xffffff, 1)
   pointLight.position.x = 20
   pointLight.position.y = 50
-  pointLight.position.z = 20
+  pointLight.position.z = -10
   scene.add(pointLight)
 
   const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, .5 );
   scene.add( light );
-
-  scene.fog = new THREE.FogExp2( 0x1b1e2f, .01 )
 }
 
 async function loadModel() {
@@ -113,8 +111,8 @@ onMounted(async () => {
   controls.autoRotate = true
 
   if(props.filePathToModel === 'camera.glb') {
-    camera.position.z = 4
-    camera.position.x = 3
+    camera.position.z = -4
+    camera.position.x = -2
     camera.position.y = 2
   } else {
     camera.position.z = 20
