@@ -26,19 +26,12 @@ function initateRenderer() {
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.value.appendChild(renderer.domElement)
 
-  // addMouseHandler(renderer.domElement, model)
-
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight)
   })
-
-
-/*   document.addEventListener( 'mousewheel', (event) => {
-    camera.position.z +=event.deltaY/100;
-  }); */
 
 }
 
@@ -95,10 +88,7 @@ function animate() {
     animate()
   })
 
-  if(model) {
-    // model.rotation.x += 0.01
-    model.rotation.y += 0.005 
-  }
+  controls.update()
 
   renderer.render(scene, camera)
 }
@@ -112,7 +102,9 @@ onMounted(async () => {
 
   controls = new OrbitControls( camera, renderer.domElement );
   controls.minDistance  = 4
-  controls.maxDistance = 50;
+  controls.maxDistance = 50
+  controls.autoRotate = true
+  
   camera.position.z = 20
   camera.position.x = 10
   camera.position.y = 10
